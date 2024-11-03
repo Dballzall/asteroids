@@ -1,47 +1,48 @@
 import pygame
-from constants import SCREEN_WIDTH, SCREEN_HEIGHT
+from constants import *
 from player import Player
+from asteroid import Asteroid
+from asteroidfield import AsteroidField
+
 
 def main():
     pygame.init()
-
-    # Set up the screen
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    clock = pygame.time.Clock()
     pygame.display.set_caption("Asteroids!")
 
-    # Instantiate the Player in the center of the screen
-    player = Player(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
-   
-    # Initialize the clock and delta time
-    clock = pygame.time.Clock()
+    updatable = pygame.sprite.Group()
+    drawable = pygame.sprite.Group()
+    asteroids = pygame.sprite.Group()
+
+    Asteroid.containers = (asteroids, updatable, drawable)
+    AsteroidField.containers = updatable
+    asteroid_field = AsteroidField()
+
+    Player.containers = (updatable, drawable)
+
+    player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+
     dt = 0
 
-    # Game loop
-    running = True
-    while running:
-
-        # Event handling
+    while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                running = False  # Exit the game loop
+                return
 
-        # Handle player updates
-        player.update(dt)
-       
-        # Fill screen with black color using RGB tuple
-        screen.fill((0, 0, 0)) 
+        for obj in updatable:
+            obj.update(dt)
 
-        # Draw player
-        player.draw(screen)
+        screen.fill("black")
 
-        # Update the display
+        for obj in drawable:
+            obj.draw(screen)
+
         pygame.display.flip()
 
-        # Limit FPS to 60 and calculate delta time
-        dt = clock.tick(60) / 1000  # Delta time in seconds
+        # limit the framerate to 60 FPS
+        dt = clock.tick(60) / 1000
 
-    # Properly quit Pygame after exiting the loop
-    pygame.quit()
 
 if __name__ == "__main__":
     main()
