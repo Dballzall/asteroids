@@ -1,42 +1,47 @@
 import pygame
-
-from constants import *
+from constants import SCREEN_WIDTH, SCREEN_HEIGHT
 from player import Player
-
 
 def main():
     pygame.init()
 
-    #set up the screen 
+    # Set up the screen
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    pygame.display.set_caption("Asteroids!")
 
     # Instantiate the Player in the center of the screen
     player = Player(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
    
-   #Initialize the clock and delta time
+    # Initialize the clock and delta time
     clock = pygame.time.Clock()
     dt = 0
 
     # Game loop
-    while True:
+    running = True
+    while running:
 
-        #Event handling
+        # Event handling
         for event in pygame.event.get():
-         if event.type == pygame.QUIT:
-                return
+            if event.type == pygame.QUIT:
+                running = False  # Exit the game loop
 
-        # Fill screen with black color
-        screen.fill("black") 
+        # Handle player updates
+        player.update(dt)
+       
+        # Fill screen with black color using RGB tuple
+        screen.fill((0, 0, 0)) 
 
-        #draw player
+        # Draw player
         player.draw(screen)
 
-        #Updates the display
+        # Update the display
         pygame.display.flip()
 
-        #Limit FPS to 60 and calculaet delta
-        dt = clock.tick(60) / 1000
+        # Limit FPS to 60 and calculate delta time
+        dt = clock.tick(60) / 1000  # Delta time in seconds
+
+    # Properly quit Pygame after exiting the loop
+    pygame.quit()
 
 if __name__ == "__main__":
     main()
-
