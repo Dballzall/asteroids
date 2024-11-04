@@ -5,6 +5,9 @@ PLAYER_TURN_SPEED = 300  # Degrees per second
 PLAYER_THRUST_POWER = 300  # Pixels per second squared
 PLAYER_FRICTION = 0.99  # Friction coefficient (between 0 and 1)
 
+# Add these new constants
+SCORE_THRESHOLD = 100  # Points needed for each speed increase
+ASTEROID_SPEED_INCREASE = 1.2  # Speed multiplier for each threshold reached
 
 ASTEROID_MIN_RADIUS = 20
 ASTEROID_KINDS = 3

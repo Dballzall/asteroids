@@ -41,6 +41,9 @@ def main():
             if event.type == pygame.QUIT:
                 return
 
+        # Update asteroid field's current score
+        asteroid_field.current_score = score
+
         for obj in updatable:
             obj.update(dt)
 
