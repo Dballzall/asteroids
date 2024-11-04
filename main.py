@@ -6,7 +6,33 @@ from asteroid import Asteroid
 from asteroidfield import AsteroidField
 from shot import Shot
 from highscore import load_high_score, save_high_score
+import time  # Add this import
 
+
+def show_game_over_screen(screen, score, high_score):
+    """Display the game over screen with scores."""
+    font_large = pygame.font.SysFont(None, 64)  # Larger font for "Game Over!"
+    font_normal = pygame.font.SysFont(None, 32)  # Normal font for scores
+    
+    # Render the text
+    game_over_text = font_large.render("Game Over!", True, "white")
+    score_text = font_normal.render(f"Final Score: {score}", True, "white")
+    high_score_text = font_normal.render(f"High Score: {high_score}", True, "yellow")
+    
+    # Get the text positions (centered on screen)
+    game_over_pos = game_over_text.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2 - 50))
+    score_pos = score_text.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2 + 10))
+    high_score_pos = high_score_text.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2 + 50))
+    
+    # Clear screen and draw the text
+    screen.fill("black")
+    screen.blit(game_over_text, game_over_pos)
+    screen.blit(score_text, score_pos)
+    screen.blit(high_score_text, high_score_pos)
+    pygame.display.flip()
+    
+    # Wait for 3 seconds
+    time.sleep(3)
 
 def main():
     pygame.init()
@@ -59,10 +85,7 @@ def main():
                     # Respawn player
                     player.reset_position()
                 else:
-                    print("Game over!")
-                    if score > high_score:
-                        save_high_score(score)
-                    return
+                    player.lives = 0  # Ensure lives don't go negative
 
             for shot in shots:
                 if asteroid.collides_with(shot):
@@ -74,15 +97,20 @@ def main():
                         high_score = score
                         save_high_score(high_score)
 
+        # Modify the game over condition
+        if player.lives <= 0:
+            if score > high_score:
+                save_high_score(score)
+            show_game_over_screen(screen, score, high_score)
+            return
+
         screen.fill("black")
 
-        # Render the score and high score
+        # Render just the score and lives (removed high score)
         score_text = font.render(f"Score: {score}", True, "white")
-        high_score_text = font.render(f"High Score: {high_score}", True, "yellow")
         lives_text = font.render(f"Lives: {player.lives}", True, "white")
         screen.blit(score_text, (10, 10))
-        screen.blit(high_score_text, (10, 35))
-        screen.blit(lives_text, (10, 60))
+        screen.blit(lives_text, (10, 35))  # Moved up since we removed high score
 
         for obj in drawable:
             obj.draw(screen)
