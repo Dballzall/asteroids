@@ -15,6 +15,9 @@ class Player(CircleShape):
         self.rotation = 0  # Initialize rotation to 0 degrees
         self.velocity = Vector2(0, 0)  # Initialize velocity vector
         self.shoot_cooldown = 0  # Time until the player can shoot again
+        self.lives = 2  # Add lives counter
+        self.invulnerable = False  # Add invulnerability flag for respawn
+        self.invulnerable_timer = 0  # Timer for invulnerability period
 
 
     def triangle(self):
@@ -64,6 +67,11 @@ class Player(CircleShape):
         """Updates the player's state based on user input."""
         keys = pygame.key.get_pressed()
 
+        # Update invulnerability timer
+        if self.invulnerable:
+            self.invulnerable_timer -= dt
+            if self.invulnerable_timer <= 0:
+                self.invulnerable = False
 
         # Rotation controls
         if keys[pygame.K_a]:
@@ -116,4 +124,15 @@ class Player(CircleShape):
 
     def draw(self, screen):
         """Draws the player as a triangle on the screen."""
-        pygame.draw.polygon(screen, "white", self.triangle(), 2)
+        # Make player blink when invulnerable
+        if not self.invulnerable or (self.invulnerable and pygame.time.get_ticks() % 200 < 100):
+            pygame.draw.polygon(screen, "white", self.triangle(), 2)
+
+
+    def reset_position(self):
+        """Reset player position and velocity after death"""
+        self.position = Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+        self.velocity = Vector2(0, 0)
+        self.rotation = 0
+        self.invulnerable = True
+        self.invulnerable_timer = 3.0  # 3 seconds of invulnerability

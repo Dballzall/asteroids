@@ -53,9 +53,16 @@ def main():
             obj.update(dt)
 
         for asteroid in asteroids:
-            if asteroid.collides_with(player):
-                print("Game over!")
-                sys.exit()
+            if asteroid.collides_with(player) and not player.invulnerable:
+                player.lives -= 1
+                if player.lives > 0:
+                    # Respawn player
+                    player.reset_position()
+                else:
+                    print("Game over!")
+                    if score > high_score:
+                        save_high_score(score)
+                    return
 
             for shot in shots:
                 if asteroid.collides_with(shot):
@@ -72,8 +79,10 @@ def main():
         # Render the score and high score
         score_text = font.render(f"Score: {score}", True, "white")
         high_score_text = font.render(f"High Score: {high_score}", True, "yellow")
+        lives_text = font.render(f"Lives: {player.lives}", True, "white")
         screen.blit(score_text, (10, 10))
         screen.blit(high_score_text, (10, 35))
+        screen.blit(lives_text, (10, 60))
 
         for obj in drawable:
             obj.draw(screen)
