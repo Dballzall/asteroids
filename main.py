@@ -12,6 +12,13 @@ def main():
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     pygame.display.set_caption("Asteroids!")
     clock = pygame.time.Clock()
+    
+    # Initialize Font
+    pygame.font.init()
+    font = pygame.font.SysFont(None, 36)  # Choose appropriate font and size
+
+    # Initialize Score
+    score = 0
 
     updatable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
@@ -46,8 +53,13 @@ def main():
                 if asteroid.collides_with(shot):
                     shot.kill()
                     asteroid.split()
+                    score += 10  # Update the score
 
         screen.fill("black")
+
+        # Render the score
+        score_text = font.render(f"Score: {score}", True, "white")
+        screen.blit(score_text, (10, 10))  # Adjust position as needed
 
         for obj in drawable:
             obj.draw(screen)
