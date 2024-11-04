@@ -5,6 +5,7 @@ from player import Player
 from asteroid import Asteroid
 from asteroidfield import AsteroidField
 from shot import Shot
+from highscore import load_high_score, save_high_score
 
 
 def main():
@@ -15,10 +16,11 @@ def main():
     
     # Initialize Font
     pygame.font.init()
-    font = pygame.font.SysFont(None, 36)  # Choose appropriate font and size
+    font = pygame.font.SysFont(None, 24)  # Adjusted font size to 24 for smaller text
 
-    # Initialize Score
+    # Initialize Score and High Score
     score = 0
+    high_score = load_high_score()  # Load the high score
 
     updatable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
@@ -39,6 +41,9 @@ def main():
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                # Save high score before quitting
+                if score > high_score:
+                    save_high_score(score)
                 return
 
         # Update asteroid field's current score
@@ -57,12 +62,18 @@ def main():
                     shot.kill()
                     asteroid.split()
                     score += 10  # Update the score
+                    # Update high score if current score is higher
+                    if score > high_score:
+                        high_score = score
+                        save_high_score(high_score)
 
         screen.fill("black")
 
-        # Render the score
+        # Render the score and high score
         score_text = font.render(f"Score: {score}", True, "white")
-        screen.blit(score_text, (10, 10))  # Adjust position as needed
+        high_score_text = font.render(f"High Score: {high_score}", True, "yellow")
+        screen.blit(score_text, (10, 10))
+        screen.blit(high_score_text, (10, 35))
 
         for obj in drawable:
             obj.draw(screen)
